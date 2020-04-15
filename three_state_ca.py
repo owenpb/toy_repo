@@ -34,10 +34,12 @@ def lookup(rule_number):
     """
 
     if not isinstance(rule_number, int) or rule_number < 0 or rule_number > 19682:
-        raise ValueError("rule_number must be an integer between 0 and 19682 (inclusive)")
+        raise ValueError(
+            "rule_number must be an integer between 0 and 19682 (inclusive)"
+        )
 
     n = rule_number
-    ternary = ''
+    ternary = ""
 
     while n != 0:
         n, i = divmod(n, 3)  # gives quotient and remainder after dividing by 3
@@ -45,13 +47,9 @@ def lookup(rule_number):
 
     if len(ternary) != 9:
         padding = 9 - len(ternary)
-        ternary = ternary + '0'*padding
+        ternary = ternary + "0" * padding
 
     return dict(zip(neighborhoods, map(int, ternary)))
-
-
-initial_condition = initialize(length)
-lookup_table = lookup(rule_number)
 
 
 class ECA(object):
@@ -62,7 +60,9 @@ class ECA(object):
 
         for i in initial_condition:
             if i not in [0, 1, 2]:
-                raise ValueError("The initial condition must be a list containing 0's, 1's and 2's only")
+                raise ValueError(
+                    "The initial condition must be a list containing 0's, 1's and 2's only"
+                )
 
         self.lookup_table = lookup(rule_number)
         self.initial = initial_condition
@@ -85,20 +85,24 @@ class ECA(object):
             for i in range(self._length):
 
                 # apply periodic boundary condition
-                neighborhood = (self.current_config[(i-1) % length], self.current_config[i])
+                neighborhood = (
+                    self.current_config[(i - 1) % length],
+                    self.current_config[i],
+                )
                 new_config.append(self.lookup_table[neighborhood])
 
             self.current_config = new_config
             self.spacetime.append(new_config)
 
 
-# Evolve the CA for 'time' time steps, with rule number and initial condition as previously specified
+# Create initial condition and evolve the CA for 'time' time steps, using the specified rule number
+initial_condition = initialize(length)
 config = ECA(rule_number, initial_condition)
 config.evolve(time)
 field = config.spacetime
 
 # Plot the spacetime field diagram. 0=white, 1=light, 2=darkest
 plt.figure(figsize=(12, 12))
-plt.imshow(field, cmap=plt.cm.Reds, interpolation='nearest')
-plt.savefig('3_state_CA_output.jpg')
+plt.imshow(field, cmap=plt.cm.Reds, interpolation="nearest")
+# plt.savefig('3_state_CA_output.jpg')
 plt.show()
